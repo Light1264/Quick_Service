@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:quick_service/model/service_provider_model.dart';
 import 'package:quick_service/widget/app_button.dart';
-
+import '../screen/booking_screen.dart';
 
 class ServiceProviderCard extends StatelessWidget {
   const ServiceProviderCard({super.key, required this.provider});
@@ -77,6 +78,7 @@ class ServiceProviderCard extends StatelessWidget {
             AppPrimaryButton(
               buttonText: "Book",
               onPressed: () {
+                Get.to(BookingScreen(provider: provider));
               },
             ),
           ],

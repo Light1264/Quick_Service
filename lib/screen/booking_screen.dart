@@ -11,7 +11,7 @@ class BookingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    final controller = Get.put(BookingController(provider));
 
     return Scaffold(
       appBar: AppBar(
@@ -83,10 +83,14 @@ class BookingScreen extends StatelessWidget {
                 height: 50,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: 3,
+                  itemCount: controller.dates.length,
                   itemBuilder: (context, index) {
+                    final date = controller.dates[index];
+                    // final isSelected =
+                    //     controller.selectedDate.value.day == date.day;
+
                     return GestureDetector(
-                      onTap: () => (){},
+                      onTap: () => controller.selectDate(date),
                       child: SizedBox(
                         child: Obx(
                           () {
@@ -97,15 +101,25 @@ class BookingScreen extends StatelessWidget {
                                 vertical: 10,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColor.primaryColor,
+                                color: controller.selectedDate.value.day ==
+                                        date.day
+                                    ? AppColor.primaryColor
+                                    : Colors.grey[200],
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Center(
                                 child: Text(
-                                  "date",
+                                  controller.formatDate(date),
                                   style: TextStyle(
-                                    color:  Colors.black,
-                                    fontWeight:FontWeight.normal,
+                                    color: controller.selectedDate.value.day ==
+                                            date.day
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontWeight:
+                                        controller.selectedDate.value.day ==
+                                                date.day
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
                                   ),
                                 ),
                               ),
@@ -126,7 +140,7 @@ class BookingScreen extends StatelessWidget {
               GridView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: 6,
+                itemCount: controller.timeSlots.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: 10,
@@ -134,21 +148,33 @@ class BookingScreen extends StatelessWidget {
                   childAspectRatio: 3,
                 ),
                 itemBuilder: (context, index) {
-
+                  final slot = controller.timeSlots[index];
+                  final isBooked = controller.bookedSlots.contains(slot);
+                  final isSelected = controller.selectedTime.value == slot;
                   return GestureDetector(
-                    onTap: (){},
+                    onTap: isBooked ? null : () => controller.selectTime(slot),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isBooked
+                            ? Colors.grey[300]
+                            : isSelected
+                                ? AppColor.primaryColor
+                                : Colors.white,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: Center(
                         child: Text(
-                          "slot",
+                          slot,
                           style: TextStyle(
-                            color:  Colors.black,
-                            fontWeight:  FontWeight.normal,
+                            color: isBooked
+                                ? Colors.grey
+                                : isSelected
+                                    ? Colors.white
+                                    : Colors.black,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                       ),
@@ -163,7 +189,7 @@ class BookingScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               DropdownButton<int>(
-                value: 1,
+                value: controller.selectedDuration.value,
                 items: const [1, 2, 3]
                     .map(
                       (e) => DropdownMenuItem(
@@ -174,19 +200,34 @@ class BookingScreen extends StatelessWidget {
                       ),
                     )
                     .toList(),
-                onChanged: (v) {},
+                onChanged: (v) => controller.setDuration(v!),
               ),
               const SizedBox(height: 15),
               Text(
-                'Total: }',
+                'Total: \$${controller.totalCost.toStringAsFixed(2)}',
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 80),
-              AppPrimaryButton(
+              controller.isConfirming.value
+                  ? Center(
+                    child: const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColor.primaryColor
+                        ),
+                      ),
+                  )
+                  : AppPrimaryButton(
                       buttonText: "Confirm Booking",
-                      onPressed: () {},
-                      buttonColor:AppColor.primaryColor
+                      onPressed: controller.canConfirm
+                          ? () => controller.confirmBooking()
+                          : () {},
+                      buttonColor: controller.canConfirm
+                          ? AppColor.primaryColor
+                          : Colors.grey,
                     ),
             ],
           ),

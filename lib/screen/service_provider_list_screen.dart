@@ -15,7 +15,7 @@ class ServiceProviderListScreen extends StatelessWidget {
         title: const Text(
           'Service Providers',
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -32,14 +32,12 @@ class ServiceProviderListScreen extends StatelessWidget {
                     onChanged: controller.filterProviders,
                     decoration: InputDecoration(
                       hintText: 'Search providers...',
-                      suffixIcon: Obx(
-                        () => controller.searchText.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear),
-                                onPressed: controller.clearSearch,
-                              )
-                            : const SizedBox(),
-                      ),
+                      suffixIcon: Obx(() => controller.searchText.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: controller.clearSearch,
+                            )
+                          : const SizedBox()),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -63,7 +61,8 @@ class ServiceProviderListScreen extends StatelessWidget {
                 itemCount: controller.filteredList.length,
                 itemBuilder: (_, index) {
                   return ServiceProviderCard(
-                      provider: controller.filteredList[index]);
+                    provider: controller.filteredList[index],
+                  );
                 },
               );
             }),
